@@ -3,8 +3,9 @@
 
 #include <QObject>
 
-#include <authorization.h>
-#include <settingsfile.h>
+#include "authorization.h"
+#include "settingsfile.h"
+#include "synchronization.h"
 
 class Client : public QObject
 {
@@ -20,6 +21,8 @@ public slots:
 private:
     Authorization* authorization;
     SettingsFile* settingsfile;
+    QVector<Synchronization*> synchronizations;
+    Q_INVOKABLE void newSync(QString);
 
 
 };

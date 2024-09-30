@@ -4,11 +4,13 @@
 #include <QObject>
 #include <QTcpSocket>
 
+class Client;
+class SettingsFile;
 class Authorization : public QObject
 {
     Q_OBJECT
 public:
-    explicit Authorization(QObject *parent = nullptr);
+    explicit Authorization(QObject *parent = nullptr, Client* client = nullptr, SettingsFile* settingsfile = nullptr);
 
 signals:
 
@@ -19,8 +21,11 @@ private slots:
 
 private:
     QTcpSocket* socket;
-    quint64 id;
+    Client* client;
     SettingsFile* settingsfile;
+    quint64 id;
+    void sendID();
+
 };
 
 #endif // AUTHORIZATION_H
