@@ -1,111 +1,72 @@
 #include "synchronization.h"
 
-Synchronization::Synchronization(QObject *parent, QString sync_patch) : QObject(parent)
+#include <QDir>
+
+#include "folder.h"
+#include "file.h"
+#include "syncfile.h"
+
+
+Synchronization::Synchronization(QObject *parent, QString sync_folder) : QObject(parent), sync_folder(sync_folder)
 {
-    syncfile = new SyncFile;
+
+    sync_timer = new QTimer;
+
+    QObject::connect(sync_timer, &QTimer::timeout, this, &Synchronization::startSync);
 }
 
-void server::sendFileToClient(QFile &file)
+void Synchronization::startSync()
 {
-    if (!socket->isValid()) {
-            qDebug() << "Socket is not valid, skipping file transfer.";
-            return;
-        }
-
-
-    // Інформація про файл, який буде передаватися
-    QByteArray arr;
-    QString name_file = file.fileName();
-    qDebug() << "name_file" << name_file;
-    // Оголошуємо тип передачі "FILE"
-        QDataStream out(&arr, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_7);
-        out << quint16(0) << QString("FILE") << name_file << file.size(); // Додаємо тип передачі "FILE"
-        out.device()->seek(0);
-        out << quint16(arr.size() - sizeof(quint16));
-    // Надсилання мета-даних про файл всім клієнтам
-    for(int i = 0; i < Sockets.size(); i++) {
-        Sockets[i]->write(arr);
-        Sockets[i]->waitForBytesWritten();
-    }
-
-    // Читання та надсилання файлу блоками по 512 байт
-    QByteArray block;
-    if (file.open(QIODevice::ReadOnly)) {
-        while (!file.atEnd()) {
-            block = file.read(512);  // Читаємо блок 512 байт
-            for (int i = 0; i < Sockets.size(); i++) {
-                Sockets[i]->write(block);
-                Sockets[i]->waitForBytesWritten();
-            }
-        }
-        file.close();
-    }
-
-    // Перевірка та виведення інформації про завершення передачі файлу
-    for(int i = 0; i < Sockets.size(); i++) {
-        if (Sockets[i]->bytesToWrite() == 0) {
-            qDebug() << "file upload completed! client #" << i + 1;
-        }
-    }
-
-
+    this->sync(sync_folder);
 }
 
-void server::sendFolderToClient(const QString &folderPath)
+void Synchronization::sync(const QString& path)
 {
-    QDir dir(folderPath);
+    if(!socket->isValid()){
+        qDebug() << "Socket is not valid, skipping file transfer.";
+        return;
+    }
+
+    QDir dir(path);
     if (!dir.exists()) {
         qDebug() << "Directory does not exist!";
         return;
     }
 
-    // Отримуємо список файлів і папок у директорії
-    QStringList fileNames = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-    QStringList folderNames = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    SyncFile syncfile(path);
 
-    // Відправляємо сигнал початку передачі папки
-    QByteArray arr;
-    QDataStream out(&arr, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << QString("START_FOLDER") << folderPath;  // Початок передачі папки
-    out.device()->seek(0);
-    out << quint16(arr.size() - sizeof(quint16));
-    // Відправляємо сигнал всім клієнтам про початок передачі папки
-    for (int i = 0; i < Sockets.size(); i++) {
-        Sockets[i]->write(arr);
-        Sockets[i]->waitForBytesWritten();
-        qDebug() << "send start folder";
+    Folder* folder = new Folder(this, path);
+    folder->openFolder();
+
+    QStringList file_names = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    foreach(QString file_name, file_names){
+        File file(this, dir.filePath(file_name), syncfile);
     }
 
-    // Відправляємо всі файли у поточній папці
-    foreach (QString fileName, fileNames) {
-        QFile file(dir.filePath(fileName));
-        qDebug() << "foreach1";
-        //QFile file2("testtt.7z");
-        this->sendFileToClient(file);  // Використовуємо вже існуючу функцію для відправки файлу
-    }
-//    QFile file2("testtt.7z");
-//    this->sendFileToClient(file2);  // Використовуємо вже існуючу функцію для відправки файлу
-
-    // Рекурсивно обробляємо всі вкладені папки
-    foreach (QString folderName, folderNames) {
-        QString subFolderPath = dir.filePath(folderName);
-        sendFolderToClient(subFolderPath);  // Рекурсивно відправляємо вкладені папки
+    QStringList folder_names = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    foreach(QString folder_name, folder_names) {
+        QString sub_folder_path = dir.filePath(folder_name);
+        this->sync(sub_folder_path);
     }
 
-    // Відправляємо сигнал завершення передачі папки
-    arr.clear();
-    out.device()->seek(0);
-    out << quint16(0) << QString("END_FOLDER") << folderPath;  // Завершення передачі папки
-    out.device()->seek(0);
-    out << quint16(arr.size() - sizeof(quint16));
-    for (int i = 0; i < Sockets.size(); i++) {
-        Sockets[i]->write(arr);
-        Sockets[i]->waitForBytesWritten();
-        qDebug() << "send end folder";
-    }
+    folder->closeFolder();
+    delete folder;
 
-    qDebug() << "Folder " << folderPath << " and all contents sent successfully!";
+    qDebug() << "Folder " << path << " and all contents sent successfully!";
 }
+
+void Synchronization::send(const QByteArray& arr)
+{
+    qDebug() << "send()";
+    socket->write(arr);
+    socket->waitForBytesWritten();
+}
+
+bool Synchronization::allBytesSend()
+{
+    if(socket->bytesToWrite() == 0) return true;
+    else return false;
+}
+
+
 

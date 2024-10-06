@@ -4,10 +4,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QVariant>
 
 
-SettingsFile::SettingsFile(QString path) : file_path(path), id(0), count_sync(0)
+SettingsFile::SettingsFile(QString path)
 {
+    file_path = path;
+    id = 0;
+    count_sync = 0;
     loadSettings();
 }
 
@@ -17,7 +21,7 @@ quint64 SettingsFile::getID()
 }
 int SettingsFile::getCountSync()
 {
-    return settings_list.count();
+    return path_sync_list.count();
 }
 
 QString SettingsFile::getPathSync(int num)
@@ -42,7 +46,7 @@ bool SettingsFile::loadSettings()
     QFile file(file_path);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Не вдалося відкрити файл для зчитування.");
+        qWarning("error open file for read");
         return false;
     }
 
@@ -52,7 +56,7 @@ bool SettingsFile::loadSettings()
     QJsonDocument doc = QJsonDocument::fromJson(data);
     if (doc.isNull() || !doc.isObject())
     {
-        qWarning("Помилка формату JSON.");
+        qWarning("error format json");
         return false;
     }
 
@@ -81,7 +85,7 @@ bool SettingsFile::saveSettings()
     QFile file(file_path);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Не вдалося відкрити файл для запису.");
+        qWarning("error open file for write");
         return false;
     }
 
@@ -89,7 +93,7 @@ bool SettingsFile::saveSettings()
     json["id"] = static_cast<double>(id);
 
     QJsonArray pathArray;
-    for (const QString& path : path_sync_list)
+    for(const QString& path : path_sync_list)
     {
         pathArray.append(path);
     }

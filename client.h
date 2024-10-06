@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <QObject>
+#include <QTcpSocket>
 
 #include "authorization.h"
 #include "settingsfile.h"
@@ -23,6 +24,8 @@ private:
     SettingsFile* settingsfile;
     QVector<Synchronization*> synchronizations;
     Q_INVOKABLE void newSync(QString);
+    Q_INVOKABLE void deleteSync(int);
+    QTcpSocket* socket;
 
 
 };

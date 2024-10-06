@@ -1,21 +1,115 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
+import QtQuick.Controls 2.0
+import QtQuick.Dialogs 1.2
 
 Window {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("ClientSync")
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            Qt.quit();
+    // Оголошення ListModel для зберігання папок
+    ListModel {
+        id: folderModel
+    }
+
+    FileDialog {
+        id: fileDialog
+        folder: "file:///C:/"
+        title: "Оберіть папку для синхронізації"
+        selectFolder: true
+        onAccepted: {
+            console.log("Обрана папка: " + fileDialog.fileUrl);
+            folderModel.append({"folderName": fileDialog.fileUrl.toString(), "syncState": "OFF"});
+        }
+        onRejected: {
+            console.log("Вибір папки скасовано");
         }
     }
 
-    Text {
-        text: qsTr("Hello World")
+    Column {
+        spacing: 20
         anchors.centerIn: parent
+
+        Text {
+            text: qsTr("ClientSync - Синхронізація Папок")
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        // Загальна кнопка синхронізації
+        Button {
+            id: syncButton
+            text: "Увімкнути Синхронізацію"
+            background: Rectangle {
+                color: syncButton.text === "Увімкнути Синхронізацію" ? "red" : "green"
+                radius: 4
+            }
+            onClicked: {
+                if (syncButton.text === "Увімкнути Синхронізацію") {
+                    syncButton.text = "Вимкнути Синхронізацію";
+                } else {
+                    syncButton.text = "Увімкнути Синхронізацію";
+                }
+            }
+        }
+
+        Button {
+            text: "Додати Папку Синхронізації"
+            onClicked: {
+                fileDialog.open();
+            }
+        }
+
+        ListView {
+            width: parent.width
+            height: 200
+            model: folderModel
+
+            delegate: Item {
+                width: parent.width
+                height: 40
+
+                Row {
+                    spacing: 10
+
+                    Text {
+                        text: folderName
+                        font.pixelSize: 18
+                    }
+
+                    Button {
+                        id: syncToggleButton
+                        text: syncState === "ON" ? "Вимкнути" : "Увімкнути"
+                        background: Rectangle {
+                            color: syncState === "ON" ? "green" : "red"
+                            radius: 4
+                        }
+
+                        onClicked: {
+                            if (syncState === "OFF") {
+                                syncState = "ON";
+                                syncToggleButton.text = "Вимкнути";
+                                console.log("Синхронізація увімкнена для: " + folderName);
+                            } else {
+                                syncState = "OFF";
+                                syncToggleButton.text = "Увімкнути";
+                                console.log("Синхронізація вимкнена для: " + folderName);
+                            }
+                        }
+                    }
+
+                    Button {
+                        text: "Видалити"
+                        onClicked: {
+                            console.log("Видалено папку: " + folderName);
+                            folderModel.remove(index);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
