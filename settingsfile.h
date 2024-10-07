@@ -11,7 +11,9 @@ public:
     int getCountSync();
     QString getPathSync(int);
     void addSync(QString);
+    void removeSync(QString);
     void setID(quint64);
+    QStringList getSync();
 
 private:
     quint64 id;

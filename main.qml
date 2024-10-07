@@ -14,6 +14,14 @@ Window {
         id: folderModel
     }
 
+    Component.onCompleted: {
+        var folders = client.getSyncList();
+        for (var i = 0; i < folders.length; i++) {
+            folderModel.append({"folderName": folders[i], "syncState": "OFF"});
+        }
+    }
+
+
     FileDialog {
         id: fileDialog
         folder: "file:///C:/"
@@ -22,6 +30,7 @@ Window {
         onAccepted: {
             console.log("Обрана папка: " + fileDialog.fileUrl);
             folderModel.append({"folderName": fileDialog.fileUrl.toString(), "syncState": "OFF"});
+            client.newSync(fileDialog.fileUrl.toString());
         }
         onRejected: {
             console.log("Вибір папки скасовано");
@@ -50,8 +59,10 @@ Window {
             onClicked: {
                 if (syncButton.text === "Увімкнути Синхронізацію") {
                     syncButton.text = "Вимкнути Синхронізацію";
+                    client.onoffAllSync(true);
                 } else {
                     syncButton.text = "Увімкнути Синхронізацію";
+                    client.onoffAllSync(false);
                 }
             }
         }
@@ -93,10 +104,12 @@ Window {
                                 syncState = "ON";
                                 syncToggleButton.text = "Вимкнути";
                                 console.log("Синхронізація увімкнена для: " + folderName);
+                                client.onoffSync(true, index);
                             } else {
                                 syncState = "OFF";
                                 syncToggleButton.text = "Увімкнути";
                                 console.log("Синхронізація вимкнена для: " + folderName);
+                                client.onoffSync(false, index);
                             }
                         }
                     }
@@ -105,7 +118,7 @@ Window {
                         text: "Видалити"
                         onClicked: {
                             console.log("Видалено папку: " + folderName);
-                            folderModel.remove(index);
+                            client.deleteSync(index)
                         }
                     }
                 }

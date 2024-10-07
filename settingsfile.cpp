@@ -5,7 +5,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QVariant>
-
+#include <QDebug>
 
 SettingsFile::SettingsFile(QString path)
 {
@@ -106,5 +106,20 @@ bool SettingsFile::saveSettings()
     return true;
 }
 
+void SettingsFile::removeSync(QString path)
+{
+    if(path_sync_list.removeOne(path)){
+        qDebug() << "Папка синхронізації видалена: " << path;
+    }
+    else{
+        qDebug() << "Папку синхронізації не знайдено: " << path;
+    }
 
+    saveSettings();
+}
+
+QStringList SettingsFile::getSync()
+{
+    return path_sync_list;
+}
 

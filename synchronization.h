@@ -14,6 +14,9 @@ public:
     explicit Synchronization(QObject *parent = nullptr, QString sync_folder = "");
     void send(const QByteArray&);
     bool allBytesSend();
+    void onoffTimer(bool);
+    QString getSyncFolder();
+
 
 signals:
 

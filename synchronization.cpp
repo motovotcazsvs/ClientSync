@@ -6,6 +6,8 @@
 #include "file.h"
 #include "syncfile.h"
 
+#define SYNCTIMER 600000
+
 
 Synchronization::Synchronization(QObject *parent, QString sync_folder) : QObject(parent), sync_folder(sync_folder)
 {
@@ -66,6 +68,17 @@ bool Synchronization::allBytesSend()
 {
     if(socket->bytesToWrite() == 0) return true;
     else return false;
+}
+
+void Synchronization::onoffTimer(bool on_off)
+{
+    if(on_off) sync_timer->start(SYNCTIMER);
+    else sync_timer->stop();
+}
+
+QString Synchronization::getSyncFolder()
+{
+    return sync_folder;
 }
 
 
