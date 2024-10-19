@@ -5,7 +5,7 @@
 #include "client.h"
 #include "settingsfile.h"
 
-Authorization::Authorization(QObject* parent, Client* client, SettingsFile* settingsfile) : QObject(parent), client(client), settingsfile(settingsfile)
+Authorization::Authorization(QObject* parent, Client* client, SettingsFile* settingsfile, QTcpSocket* socket) : QObject(parent), client(client), settingsfile(settingsfile), socket(socket)
 {
     id = settingsfile->getID();
     QObject::connect(socket, &QTcpSocket::readyRead, this, &Authorization::authorizationClient);

@@ -14,6 +14,11 @@ class Client : public QObject
 public:
     explicit Client(QObject *parent = 0);
     void authorizationSuccessful();
+    Q_INVOKABLE void newSync(QString);
+    Q_INVOKABLE void deleteSync(int);
+    Q_INVOKABLE void onoffAllSync(bool);
+    Q_INVOKABLE void onoffSync(bool, int);
+    Q_INVOKABLE QStringList getSyncList();
 
 signals:
 
@@ -23,11 +28,6 @@ private:
     Authorization* authorization;
     SettingsFile* settingsfile;
     QVector<Synchronization*> synchronizations;
-    Q_INVOKABLE void newSync(QString);
-    Q_INVOKABLE void deleteSync(int);
-    Q_INVOKABLE void onoffAllSync(bool);
-    Q_INVOKABLE void onoffSync(bool, int);
-    Q_INVOKABLE QStringList getSyncList();
     QTcpSocket* socket;
 
 

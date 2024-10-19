@@ -10,9 +10,10 @@ class Authorization : public QObject
 {
     Q_OBJECT
 public:
-    explicit Authorization(QObject *parent = nullptr, Client* client = nullptr, SettingsFile* settingsfile = nullptr);
+    explicit Authorization(QObject *parent = nullptr, Client* client = nullptr, SettingsFile* settingsfile = nullptr, QTcpSocket* socket = nullptr);
 
 signals:
+    void successfull();
 
 public slots:
 
