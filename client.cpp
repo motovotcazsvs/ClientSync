@@ -4,7 +4,9 @@ Client::Client(QObject *parent) : QObject(parent)
 {
     socket = new QTcpSocket;
     settingsfile = new SettingsFile("settingsfile.json");
-    authorization = new Authorization(this, this, settingsfile);
+    authorization = new Authorization(this, settingsfile, socket);
+    QObject::connect(authorization, &Authorization::successfull, this, &Client::authorizationSuccessful);
+
 }
 
 void Client::authorizationSuccessful()

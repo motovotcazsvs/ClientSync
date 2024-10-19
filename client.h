@@ -13,7 +13,6 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
-    void authorizationSuccessful();
     Q_INVOKABLE void newSync(QString);
     Q_INVOKABLE void deleteSync(int);
     Q_INVOKABLE void onoffAllSync(bool);
@@ -23,6 +22,9 @@ public:
 signals:
 
 public slots:
+
+private slots:
+    void authorizationSuccessful();
 
 private:
     Authorization* authorization;

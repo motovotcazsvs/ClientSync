@@ -2,10 +2,9 @@
 
 #include <QDataStream>
 
-#include "client.h"
 #include "settingsfile.h"
 
-Authorization::Authorization(QObject* parent, Client* client, SettingsFile* settingsfile, QTcpSocket* socket) : QObject(parent), client(client), settingsfile(settingsfile), socket(socket)
+Authorization::Authorization(QObject* parent, SettingsFile* settingsfile, QTcpSocket* socket) : QObject(parent), settingsfile(settingsfile), socket(socket)
 {
     id = settingsfile->getID();
     QObject::connect(socket, &QTcpSocket::readyRead, this, &Authorization::authorizationClient);
@@ -30,7 +29,7 @@ void Authorization::authorizationClient()
         in >> id;
         settingsfile->setID(id);
         sendID();
-        client->authorizationSuccessful();
+        emit this->successfull();
 
     }
 }
