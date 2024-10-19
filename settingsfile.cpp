@@ -44,9 +44,18 @@ void SettingsFile::setID(quint64 new_id)
 bool SettingsFile::loadSettings()
 {
     QFile file(file_path);
+
+    if(file.exists() == false)
+    {
+        qWarning("file no exists, create file");
+        saveSettings();
+        return true;
+    }
+
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("error open file for read");
+
         return false;
     }
 
@@ -85,7 +94,7 @@ bool SettingsFile::saveSettings()
     QFile file(file_path);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("error open file for write");
+        qWarning("file not open, for write");
         return false;
     }
 
@@ -105,6 +114,7 @@ bool SettingsFile::saveSettings()
 
     return true;
 }
+
 
 void SettingsFile::removeSync(QString path)
 {
