@@ -11,7 +11,7 @@
 
 Synchronization::Synchronization(QObject *parent, QString sync_folder, QTcpSocket* socket) : QObject(parent), sync_folder(sync_folder), socket(socket)
 {
-    qDebug() << "Synchronization()";
+    qDebug() << "Synchronization(sync_folder)" << sync_folder;
 
     sync_timer = new QTimer;
 
@@ -27,7 +27,7 @@ void Synchronization::startSync()
 
 void Synchronization::sync(const QString& path)
 {
-    qDebug() << "sync()";
+    qDebug() << "sync()" << path;
 
     if(!socket->isValid()){
         qDebug() << "Socket is not valid, skipping file transfer.";
