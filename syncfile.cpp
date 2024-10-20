@@ -5,9 +5,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDebug>
 
 SyncFile::SyncFile(const QString& path) : path(path)
 {
+    qDebug() << "SyncFile()" << path;
+
     QString file_path = path + "/SyncFile.json";
     if(QFile(file_path).exists() == false){
         QFile sync_file(file_path);
@@ -24,11 +27,15 @@ SyncFile::SyncFile(const QString& path) : path(path)
 
 bool SyncFile::needToCheck()
 {
+    qDebug() << "needToCheck()";
+
     return already_synchronization;
 }
 
 bool SyncFile::fileChanged(const QString& file_path)
 {
+    qDebug() << "fileChanged(file_path)" << file_path;
+
     QFileInfo file_info(file_path);
     QString file_name = file_info.fileName();
     QDateTime last_modified = file_info.lastModified();
@@ -48,6 +55,8 @@ bool SyncFile::fileChanged(const QString& file_path)
 
 void SyncFile::saveChanged(const QString& file_path)
 {
+    qDebug() << "saveChanged()" << file_path;
+
     QFileInfo file_info(file_path);
     QString file_name = file_info.fileName();
     QDateTime last_modified = file_info.lastModified();
@@ -58,6 +67,8 @@ void SyncFile::saveChanged(const QString& file_path)
 
 bool SyncFile::loadSyncFile(const QString& file_path)
 {
+    qDebug() << "loadSyncFile(file_path)" << file_path;
+
     QFile file(file_path);
     if(!file.open(QIODevice::ReadOnly)) {
         qWarning("no open file for write!");
@@ -90,6 +101,8 @@ bool SyncFile::loadSyncFile(const QString& file_path)
 
 bool SyncFile::saveSyncFile()
 {
+    qDebug() << "saveSyncFile()";
+
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("no open file for write!");

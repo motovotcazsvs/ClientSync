@@ -6,11 +6,12 @@
 #include "file.h"
 #include "syncfile.h"
 
-#define SYNCTIMER 600000
+#define SYNCTIMER 30000//600000
 
 
-Synchronization::Synchronization(QObject *parent, QString sync_folder) : QObject(parent), sync_folder(sync_folder)
+Synchronization::Synchronization(QObject *parent, QString sync_folder, QTcpSocket* socket) : QObject(parent), sync_folder(sync_folder), socket(socket)
 {
+    qDebug() << "Synchronization()";
 
     sync_timer = new QTimer;
 
@@ -19,11 +20,15 @@ Synchronization::Synchronization(QObject *parent, QString sync_folder) : QObject
 
 void Synchronization::startSync()
 {
+    qDebug() << "startSync()";
+
     this->sync(sync_folder);
 }
 
 void Synchronization::sync(const QString& path)
 {
+    qDebug() << "sync()";
+
     if(!socket->isValid()){
         qDebug() << "Socket is not valid, skipping file transfer.";
         return;
@@ -60,24 +65,31 @@ void Synchronization::sync(const QString& path)
 void Synchronization::send(const QByteArray& arr)
 {
     qDebug() << "send()";
+
     socket->write(arr);
     socket->waitForBytesWritten();
 }
 
 bool Synchronization::allBytesSend()
 {
+    qDebug() << "allBytesSend()";
+
     if(socket->bytesToWrite() == 0) return true;
     else return false;
 }
 
 void Synchronization::onoffTimer(bool on_off)
 {
+    qDebug() << "onoffTimer(on_off)" << on_off;
+
     if(on_off) sync_timer->start(SYNCTIMER);
     else sync_timer->stop();
 }
 
 QString Synchronization::getSyncFolder()
 {
+    qDebug() << "getSyncFolder()";
+
     return sync_folder;
 }
 

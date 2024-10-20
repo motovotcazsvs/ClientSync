@@ -24,7 +24,7 @@ signals:
 public slots:
 
 private slots:
-    void authorizationSuccessful();
+    void authorizationSuccessfull();
 
 private:
     Authorization* authorization;

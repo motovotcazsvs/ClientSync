@@ -11,7 +11,7 @@ class Synchronization : public QObject
 {
     Q_OBJECT
 public:
-    explicit Synchronization(QObject *parent = nullptr, QString sync_folder = "");
+    explicit Synchronization(QObject *parent = nullptr, QString sync_folder = "", QTcpSocket* socket = nullptr);
     void send(const QByteArray&);
     bool allBytesSend();
     void onoffTimer(bool);

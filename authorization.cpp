@@ -8,7 +8,7 @@ Authorization::Authorization(QObject* parent, SettingsFile* settingsfile, QTcpSo
 {
     id = settingsfile->getID();
     QObject::connect(socket, &QTcpSocket::readyRead, this, &Authorization::authorizationClient);
-
+    this->sendID();
 }
 
 void Authorization::authorizationClient()
@@ -19,7 +19,7 @@ void Authorization::authorizationClient()
     quint16 size;
     QString type;
 
-    if(socket->bytesAvailable() < 2) return;//якщо менше поля розмір то вийти
+    if(socket->bytesAvailable() < 2) return;
     in >> size;
     if(socket->bytesAvailable() < size) return;
 
