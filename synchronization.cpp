@@ -44,7 +44,7 @@ void Synchronization::sync(const QString& path)
 
     Folder* folder = new Folder(this, path);
     folder->openFolder();
-
+/*
     QStringList file_names = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
     foreach(QString file_name, file_names){
         File file(this, dir.filePath(file_name), syncfile);
@@ -60,6 +60,8 @@ void Synchronization::sync(const QString& path)
     delete folder;
 
     qDebug() << "Folder " << path << " and all contents sent successfully!";
+
+*/
 }
 
 void Synchronization::send(const QByteArray& arr)

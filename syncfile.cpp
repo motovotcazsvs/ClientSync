@@ -27,7 +27,7 @@ SyncFile::SyncFile(const QString& path) : path(path)
 
 bool SyncFile::needToCheck()
 {
-    qDebug() << "needToCheck()";
+    qDebug() << "needToCheck()" << already_synchronization;
 
     return already_synchronization;
 }
