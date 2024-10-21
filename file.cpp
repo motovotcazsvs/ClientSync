@@ -8,6 +8,8 @@
 
 File::File(Synchronization* synchronization, const QString& path, SyncFile& syncfile) : synchronization(synchronization)
 {
+    qDebug() << "File(path)" << path;
+
     QFile file(path);
 
     if(syncfile.needToCheck()){
@@ -27,6 +29,8 @@ File::File(Synchronization* synchronization, const QString& path, SyncFile& sync
 
 void File::metaData(QFile& file)
 {
+    qDebug() << "metaData()";
+
     QByteArray arr;
     QString name_file = file.fileName();
     qDebug() << "name_file" << name_file;
@@ -40,6 +44,8 @@ void File::metaData(QFile& file)
 
 void File::fileData(QFile& file)
 {
+    qDebug() << "fileData()";
+
     QByteArray block;
     if (file.open(QIODevice::ReadOnly)) {
         while (!file.atEnd()) {

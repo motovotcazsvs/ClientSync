@@ -14,6 +14,7 @@ public:
 private:
     Synchronization* synchronization;
     const QString path;
+    QString folder_name;
 };
 
 #endif // FOLDER_H
