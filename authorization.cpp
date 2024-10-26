@@ -24,7 +24,7 @@ void Authorization::authorizationClient()
     if(socket->bytesAvailable() < size) return;
 
     in >> type;
-    qDebug() << socket->socketDescriptor() << "Type Authorization: " << type;
+    qDebug() << "Type Authorization: " << type;
     if(type == "ID"){
         in >> id;
         settingsfile->setID(id);

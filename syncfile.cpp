@@ -103,7 +103,7 @@ bool SyncFile::saveSyncFile()
 {
     qDebug() << "saveSyncFile()";
 
-    QFile file(path);
+    QFile file(path + "/SyncFile.json");
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("no open file for write!");
         return false;

@@ -2,41 +2,46 @@
 
 #include <QFile>
 #include <QDataStream>
+#include <QFileInfo>
 
 #include "synchronization.h"
 #include "syncfile.h"
+
+
 
 File::File(Synchronization* synchronization, const QString& path, SyncFile& syncfile) : synchronization(synchronization)
 {
     qDebug() << "File(path)" << path;
 
     QFile file(path);
+    QFileInfo fileinfo(path);
+    QString name_file = fileinfo.fileName();
+    qint64 size_file = file.size();
 
     if(syncfile.needToCheck()){
         if(syncfile.fileChanged(path)){
-            this->metaData(file);
+            this->metaData(name_file, size_file);
             this->fileData(file);
         }
         else return;
     }
     else {
-        this->metaData(file);
+        this->metaData(name_file, size_file);
         this->fileData(file);
     }
 
     syncfile.saveChanged(path);
 }
 
-void File::metaData(QFile& file)
+void File::metaData(QString& name_file, qint64 size_file)
 {
     qDebug() << "metaData()";
 
     QByteArray arr;
-    QString name_file = file.fileName();
     qDebug() << "name_file" << name_file;
     QDataStream out(&arr, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << QString("FILE") << name_file << file.size();
+    out << quint16(0) << QString("FILE") << name_file << size_file;
     out.device()->seek(0);
     out << quint16(arr.size() - sizeof(quint16));
     synchronization->send(arr);

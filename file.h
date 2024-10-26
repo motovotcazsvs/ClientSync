@@ -10,7 +10,7 @@ class File
 {
 public:
     File(Synchronization* Synchronization, const QString&, SyncFile&);
-    void metaData(QFile&);
+    void metaData(QString&, qint64);
     void fileData(QFile&);
 
 private:

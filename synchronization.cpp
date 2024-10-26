@@ -44,9 +44,10 @@ void Synchronization::sync(const QString& path)
 
     Folder* folder = new Folder(this, path);
     folder->openFolder();
-/*
+
     QStringList file_names = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
     foreach(QString file_name, file_names){
+        if(file_name == "SyncFile.json") continue;
         File file(this, dir.filePath(file_name), syncfile);
     }
 
@@ -61,7 +62,8 @@ void Synchronization::sync(const QString& path)
 
     qDebug() << "Folder " << path << " and all contents sent successfully!";
 
-*/
+
+    this->onoffTimer(false);//for debug
 }
 
 void Synchronization::send(const QByteArray& arr)

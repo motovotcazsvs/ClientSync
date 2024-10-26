@@ -1,6 +1,6 @@
 #include "folder.h"
 
-#include<QDataStream>
+#include <QDataStream>
 #include <QDebug>
 #include <QDir>
 
@@ -12,6 +12,7 @@ Folder::Folder(Synchronization* synchronization, const QString& folder_path) : s
 
     QDir dir(path);
     folder_name = dir.dirName();
+    qDebug() << "folder_name" << folder_name;
 }
 
 void Folder::openFolder()
@@ -22,6 +23,7 @@ void Folder::openFolder()
     QDataStream out(&arr, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_7);
     out << quint16(0) << QString("START_FOLDER") << folder_name;
+    qDebug() << (quint16(arr.size() - sizeof(quint16)));
     out.device()->seek(0);
     out << quint16(arr.size() - sizeof(quint16));
     synchronization->send(arr);
