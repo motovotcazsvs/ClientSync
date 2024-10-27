@@ -13,6 +13,7 @@ SettingsFile::SettingsFile(QString path)
     id = 0;
     count_sync = 0;
     loadSettings();
+    qDebug() << "SettingsFile() << id" << id;
 }
 
 quint64 SettingsFile::getID()
