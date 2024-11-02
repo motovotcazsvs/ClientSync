@@ -59,10 +59,10 @@ Window {
             onClicked: {
                 if (syncButton.text === "Увімкнути Синхронізацію") {
                     syncButton.text = "Вимкнути Синхронізацію";
-                    client.onoffAllSync(true);
+                    client.onoffSynchronizations(true);
                 } else {
                     syncButton.text = "Увімкнути Синхронізацію";
-                    client.onoffAllSync(false);
+                    client.onoffSynchronizations(false);
                 }
             }
         }
@@ -89,29 +89,6 @@ Window {
                     Text {
                         text: folderName
                         font.pixelSize: 18
-                    }
-
-                    Button {
-                        id: syncToggleButton
-                        text: syncState === "ON" ? "Вимкнути" : "Увімкнути"
-                        background: Rectangle {
-                            color: syncState === "ON" ? "green" : "red"
-                            radius: 4
-                        }
-
-                        onClicked: {
-                            if (syncState === "OFF") {
-                                syncState = "ON";
-                                syncToggleButton.text = "Вимкнути";
-                                console.log("Синхронізація увімкнена для: " + folderName);
-                                client.onoffSync(true, index);
-                            } else {
-                                syncState = "OFF";
-                                syncToggleButton.text = "Увімкнути";
-                                console.log("Синхронізація вимкнена для: " + folderName);
-                                client.onoffSync(false, index);
-                            }
-                        }
                     }
 
                     Button {

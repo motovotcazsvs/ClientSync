@@ -9,6 +9,7 @@ Authorization::Authorization(QObject* parent, SettingsFile* settingsfile, QTcpSo
     id = settingsfile->getID();
     QObject::connect(socket, &QTcpSocket::readyRead, this, &Authorization::authorizationClient);
     this->sendID();
+
 }
 
 void Authorization::authorizationClient()
@@ -29,6 +30,9 @@ void Authorization::authorizationClient()
         in >> id;
         settingsfile->setID(id);
         sendID();
+
+    }
+    else if(type == "OK"){
         emit this->successfull();
 
     }

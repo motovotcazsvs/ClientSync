@@ -38,17 +38,24 @@ bool SyncFile::fileChanged(const QString& file_path)
 
     QFileInfo file_info(file_path);
     QString file_name = file_info.fileName();
+    qDebug() << "file_name" << file_name;
     QDateTime last_modified = file_info.lastModified();
-    if(sync_file_list.contains(file_name)) {
+    qDebug() << "last_modified" << last_modified;
+    if(sync_file_list.contains(file_name)){
+        qDebug() << "sync_file_list.contains(file_name)";
         QDateTime last_sync_time = sync_file_list.value(file_name);
+        qDebug() << "last_sync_time" << last_sync_time;
         if(last_modified > last_sync_time){
+            qDebug() << "last_modified > last_sync_time";
             return true;
         }
         else{
+            qDebug() << "last_modified <= last_sync_time";
             return false;
         }
     }
     else{
+        qDebug() << "sync_file_list.contains(file_name) == false";
         return true;
     }
 }

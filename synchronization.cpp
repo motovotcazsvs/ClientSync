@@ -6,16 +6,12 @@
 #include "file.h"
 #include "syncfile.h"
 
-#define SYNCTIMER 30000//600000
 
 
 Synchronization::Synchronization(QObject *parent, QString sync_folder, QTcpSocket* socket) : QObject(parent), sync_folder(sync_folder), socket(socket)
 {
     qDebug() << "Synchronization(sync_folder)" << sync_folder;
 
-    sync_timer = new QTimer;
-
-    QObject::connect(sync_timer, &QTimer::timeout, this, &Synchronization::startSync);
 }
 
 void Synchronization::startSync()
@@ -23,6 +19,7 @@ void Synchronization::startSync()
     qDebug() << "startSync()";
 
     this->sync(sync_folder);
+
 }
 
 void Synchronization::sync(const QString& path)
@@ -62,8 +59,6 @@ void Synchronization::sync(const QString& path)
 
     qDebug() << "Folder " << path << " and all contents sent successfully!";
 
-
-    this->onoffTimer(false);//for debug
 }
 
 void Synchronization::send(const QByteArray& arr)
@@ -80,14 +75,6 @@ bool Synchronization::allBytesSend()
 
     if(socket->bytesToWrite() == 0) return true;
     else return false;
-}
-
-void Synchronization::onoffTimer(bool on_off)
-{
-    qDebug() << "onoffTimer(on_off)" << on_off;
-
-    if(on_off) sync_timer->start(SYNCTIMER);
-    else sync_timer->stop();
 }
 
 QString Synchronization::getSyncFolder()

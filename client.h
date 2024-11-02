@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTcpSocket>
 
+#include <QTimer>
+
 #include "authorization.h"
 #include "settingsfile.h"
 #include "synchronization.h"
@@ -15,13 +17,14 @@ public:
     explicit Client(QObject *parent = 0);
     Q_INVOKABLE void newSync(QString);
     Q_INVOKABLE void deleteSync(int);
-    Q_INVOKABLE void onoffAllSync(bool);
-    Q_INVOKABLE void onoffSync(bool, int);
+    Q_INVOKABLE void onoffSynchronizations(bool);
     Q_INVOKABLE QStringList getSyncList();
+
 
 signals:
 
 public slots:
+    void startSynchronizations();
 
 private slots:
     void authorizationSuccessfull();
@@ -31,6 +34,7 @@ private:
     SettingsFile* settingsfile;
     QVector<Synchronization*> synchronizations;
     QTcpSocket* socket;
+    QTimer* sync_timer;
 
 
 };

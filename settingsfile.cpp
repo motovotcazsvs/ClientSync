@@ -131,6 +131,7 @@ void SettingsFile::removeSync(QString path)
 
 QStringList SettingsFile::getSync()
 {
+    qDebug() << "getSync count" << path_sync_list.count();
     return path_sync_list;
 }
 
