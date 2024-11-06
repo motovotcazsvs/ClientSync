@@ -40,12 +40,12 @@ bool SyncFile::fileChanged(const QString& file_path)
     QString file_name = file_info.fileName();
     qDebug() << "file_name" << file_name;
     QDateTime last_modified = file_info.lastModified();
-    qDebug() << "last_modified" << last_modified;
+    qDebug() << "last_modified" << last_modified.toTime_t();
     if(sync_file_list.contains(file_name)){
         qDebug() << "sync_file_list.contains(file_name)";
         QDateTime last_sync_time = sync_file_list.value(file_name);
-        qDebug() << "last_sync_time" << last_sync_time;
-        if(last_modified > last_sync_time){
+        qDebug() << "last_sync_time" << last_sync_time.toTime_t();
+        if(last_modified.toTime_t() > last_sync_time.toTime_t()){
             qDebug() << "last_modified > last_sync_time";
             return true;
         }
@@ -66,9 +66,8 @@ void SyncFile::saveChanged(const QString& file_path)
 
     QFileInfo file_info(file_path);
     QString file_name = file_info.fileName();
-    QDateTime last_modified = file_info.lastModified();
-
-    sync_file_list[file_name] = last_modified;
+    QDateTime current_sync_time = QDateTime::currentDateTime();
+    sync_file_list[file_name] = current_sync_time;
     saveSyncFile();
 }
 
@@ -121,6 +120,7 @@ bool SyncFile::saveSyncFile()
         QJsonObject file_obj;
         file_obj["file_name"] = it.key();
         file_obj["last_sync"] = it.value().toString(Qt::ISODate);
+        qDebug() << "datetime syncfile" << it.value().toString(Qt::ISODate);
         sync_files.append(file_obj);
     }
 

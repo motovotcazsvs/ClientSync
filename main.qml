@@ -95,7 +95,8 @@ Window {
                         text: "Видалити"
                         onClicked: {
                             console.log("Видалено папку: " + folderName);
-                            client.deleteSync(index)
+                            client.deleteSync(index);
+                            folderModel.remove(index);
                         }
                     }
                 }
