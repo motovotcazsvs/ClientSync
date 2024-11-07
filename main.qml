@@ -21,7 +21,6 @@ Window {
         }
     }
 
-
     FileDialog {
         id: fileDialog
         folder: "file:///C:/"
@@ -34,6 +33,16 @@ Window {
         }
         onRejected: {
             console.log("Вибір папки скасовано");
+        }
+    }
+
+    // Таймер для відкладеного запуску синхронізації
+    Timer {
+        id: syncTimer
+        interval: 100 // затримка у мілісекундах
+        repeat: false
+        onTriggered: {
+            client.onoffSynchronizations(true);  // Запуск синхронізації з C++
         }
     }
 
@@ -59,10 +68,10 @@ Window {
             onClicked: {
                 if (syncButton.text === "Увімкнути Синхронізацію") {
                     syncButton.text = "Вимкнути Синхронізацію";
-                    client.onoffSynchronizations(true);
+                    syncTimer.start();  // Запускаємо таймер
                 } else {
                     syncButton.text = "Увімкнути Синхронізацію";
-                    client.onoffSynchronizations(false);
+                    client.onoffSynchronizations(false);  // Вимкнення синхронізації
                 }
             }
         }
@@ -103,6 +112,4 @@ Window {
             }
         }
     }
-
-
 }
