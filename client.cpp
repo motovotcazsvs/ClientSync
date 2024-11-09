@@ -5,7 +5,6 @@
 
 Client::Client(QObject *parent) : QObject(parent)
 {
-    on_off_sync = false;
     socket = new QTcpSocket;
     settingsfile = new SettingsFile("settingsfile.json");
     //socket->connectToHost("192.168.0.108", 44);
@@ -42,10 +41,7 @@ void Client::newSync(QString path)
     Synchronization* newsynchronization = new Synchronization(this, path, socket);
     synchronizations.append(newsynchronization);
 
-    if(on_off_sync){
-        qDebug() << "if on_off_sync" << on_off_sync;
-        newsynchronization->startSync();
-    }
+
 }
 
 void Client::deleteSync(int num)
@@ -61,8 +57,6 @@ void Client::deleteSync(int num)
 void Client::onoffSynchronizations(bool on_off)
 {
     qDebug() << "onoffSynchronizations(on_off)" << on_off;
-
-    on_off_sync = on_off;
 
     if(on_off){
         this->startSynchronizations();
@@ -85,10 +79,12 @@ void Client::startSynchronizations()
     qDebug() << "startSynchronizations()";
 
     this->sync_timer->stop();
+    emit this->stateSync(true);
     for(int i = 0; i < synchronizations.count(); i++){
         qDebug() << "for i" << i << synchronizations.count();
         synchronizations.at(i)->startSync();
     }
     this->sync_timer->start(SYNCTIMER);
+    emit this->stateSync(false);
 }
 

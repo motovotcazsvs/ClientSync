@@ -9,10 +9,34 @@ Window {
     height: 480
     title: qsTr("ClientSync")
 
+
+
+    Connections {
+        target: client
+        onStateSync: {
+            if(state_sync) {
+                main_text.text = qsTr("ЗАЧИКАЙТЕ іде Синхронізація Папок!");
+                main_text.color = "red";
+                syncButton.visible = false;
+                bottom_add.visible = false;
+            }
+            else {
+                main_text.text = qsTr("ClientSync - Синхронізація Папок");
+                main_text.color = "black";
+                syncButton.visible = true;
+                bottom_add.visible = true;
+            }
+            console.log("синхронізація: " + state_sync);
+        }
+    }
+
+
+
     // Оголошення ListModel для зберігання папок
     ListModel {
         id: folderModel
     }
+
 
     Component.onCompleted: {
         var folders = client.getSyncList();
@@ -46,43 +70,58 @@ Window {
         }
     }
 
+    Text {
+        id: main_text
+        text: qsTr("ClientSync - Синхронізація Папок")
+        color: "black"
+        font.pixelSize: 24
+        anchors.top: parent.top
+        anchors.topMargin: 25
+        horizontalAlignment: Text.AlignHCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    // Загальна кнопка синхронізації
+    Button {
+        id: syncButton
+        visible: true
+        text: "Увімкнути Синхронізацію"
+        anchors.top: main_text.bottom
+        anchors.topMargin: 50
+        anchors.horizontalCenter: parent.horizontalCenter
+        background: Rectangle {
+            color: syncButton.text === "Увімкнути Синхронізацію" ? "red" : "green"
+            radius: 4
+        }
+        onClicked: {
+            if (syncButton.text === "Увімкнути Синхронізацію") {
+                syncButton.text = "Вимкнути Синхронізацію";
+                syncTimer.start();  // Запускаємо таймер
+            } else {
+                syncButton.text = "Увімкнути Синхронізацію";
+                client.onoffSynchronizations(false);  // Вимкнення синхронізації
+            }
+        }
+    }
+
+    Button {
+        id: bottom_add
+        visible: true
+        anchors.top: syncButton.bottom
+        anchors.topMargin: 50
+        text: "Додати Папку Синхронізації"
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: {
+            fileDialog.open();
+        }
+    }
+
+
     Column {
         spacing: 20
-        anchors.centerIn: parent
-
-        Text {
-            text: qsTr("ClientSync - Синхронізація Папок")
-            font.pixelSize: 24
-            horizontalAlignment: Text.AlignHCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        // Загальна кнопка синхронізації
-        Button {
-            id: syncButton
-            text: "Увімкнути Синхронізацію"
-            background: Rectangle {
-                color: syncButton.text === "Увімкнути Синхронізацію" ? "red" : "green"
-                radius: 4
-            }
-            onClicked: {
-                if (syncButton.text === "Увімкнути Синхронізацію") {
-                    syncButton.text = "Вимкнути Синхронізацію";
-                    syncTimer.start();  // Запускаємо таймер
-                } else {
-                    syncButton.text = "Увімкнути Синхронізацію";
-                    client.onoffSynchronizations(false);  // Вимкнення синхронізації
-                }
-            }
-        }
-
-        Button {
-            text: "Додати Папку Синхронізації"
-            onClicked: {
-                fileDialog.open();
-            }
-        }
-
+        anchors.top: bottom_add.bottom
+        anchors.topMargin: 50
+        anchors.left: parent.left
         ListView {
             width: parent.width
             height: 200
@@ -113,3 +152,6 @@ Window {
         }
     }
 }
+
+
+

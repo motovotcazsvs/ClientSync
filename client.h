@@ -22,7 +22,7 @@ public:
 
 
 signals:
-
+    void stateSync(bool state_sync);
 
 public slots:
     void startSynchronizations();
@@ -36,7 +36,7 @@ private:
     QVector<Synchronization*> synchronizations;
     QTcpSocket* socket;
     QTimer* sync_timer;
-    bool on_off_sync;
+
 
 };
 
