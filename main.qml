@@ -1,7 +1,8 @@
-import QtQuick 2.5
-import QtQuick.Window 2.2
-import QtQuick.Controls 2.0
-import QtQuick.Dialogs 1.2
+import QtCore
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Dialogs
+
 
 Window {
     visible: true
@@ -13,14 +14,13 @@ Window {
 
     Connections {
         target: client
-        onStateSync: {
-            if(state_sync) {
+        function onStateSync(state_sync) {
+            if (state_sync) {
                 main_text.text = qsTr("ЗАЧИКАЙТЕ іде Синхронізація Папок!");
                 main_text.color = "red";
                 syncButton.visible = false;
                 bottom_add.visible = false;
-            }
-            else {
+            } else {
                 main_text.text = qsTr("ClientSync - Синхронізація Папок");
                 main_text.color = "black";
                 syncButton.visible = true;
@@ -45,20 +45,30 @@ Window {
         }
     }
 
-    FileDialog {
-        id: fileDialog
-        folder: "file:///C:/"
+    FolderDialog {
+        id: folderDialog
         title: "Оберіть папку для синхронізації"
-        selectFolder: true
         onAccepted: {
-            console.log("Обрана папка: " + fileDialog.fileUrl);
-            folderModel.append({"folderName": fileDialog.fileUrl.toString(), "syncState": "OFF"});
-            client.newSync(fileDialog.fileUrl.toString());
+            // Використовуємо selectedFolder замість fileUrl
+            if (folderDialog.selectedFolder) {
+                console.log("Обрана папка: " + folderDialog.selectedFolder);
+                folderModel.append({"folderName": folderDialog.selectedFolder.toString(), "syncState": "OFF"});
+                client.newSync(folderDialog.selectedFolder.toString());
+            } else {
+                console.log("Не вибрана папка");
+            }
         }
         onRejected: {
             console.log("Вибір папки скасовано");
         }
+        currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
     }
+
+
+
+
+
+
 
     // Таймер для відкладеного запуску синхронізації
     Timer {
@@ -112,7 +122,7 @@ Window {
         text: "Додати Папку Синхронізації"
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            fileDialog.open();
+            folderDialog.open();
         }
     }
 
@@ -128,7 +138,7 @@ Window {
             model: folderModel
 
             delegate: Item {
-                width: parent.width
+                width: ListView.view.width
                 height: 40
 
                 Row {
@@ -152,6 +162,3 @@ Window {
         }
     }
 }
-
-
-
