@@ -1,5 +1,8 @@
 #include "client.h"
 #include <QUrl>
+#include <QDir>
+#include <QStandardPaths>
+
 
 #define SYNCTIMER 30000//600000
 
@@ -7,6 +10,13 @@ Client::Client(QObject *parent) : QObject(parent)
 {
     socket = new QTcpSocket;
     settingsfile = new SettingsFile("settingsfile.json");
+    qDebug() << "Файл буде створено в: " << QDir::currentPath() + "/settingsfile.json";
+
+    //QString filePath = "/storage/emulated/0/settingsfile.json";
+    //QString filePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/settingsfile.json";
+    //settingsfile = new SettingsFile(filePath);
+    //qDebug() << "Файл буде створено в: " << filePath;
+
     //socket->connectToHost("192.168.0.108", 44);
     socket->connectToHost("192.168.0.151", 44);
     //socket->connectToHost("192.168.0.171", 44);
@@ -32,10 +42,12 @@ void Client::newSync(QString path)
 {
     qDebug() << "newSync(path)" << path;
 
-    QUrl url(path);
-    QString localPath = url.toLocalFile();
-    path = localPath;
-    qDebug() << "path" << path;
+    // QUrl url(path);
+    // QString localPath = url.toLocalFile();
+    // path = localPath;
+    // qDebug() << "path" << path;
+
+
 
     settingsfile->addSync(path);
     Synchronization* newsynchronization = new Synchronization(this, path, socket);

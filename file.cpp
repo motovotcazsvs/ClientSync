@@ -2,7 +2,6 @@
 
 #include <QFile>
 #include <QDataStream>
-#include <QFileInfo>
 
 #include "synchronization.h"
 #include "syncfile.h"
@@ -14,8 +13,7 @@ File::File(Synchronization* synchronization, const QString& path, SyncFile& sync
     qDebug() << "File(path)" << path;
 
     QFile file(path);
-    QFileInfo fileinfo(path);
-    QString name_file = fileinfo.fileName();
+    QString name_file = file.fileName();
     qint64 size_file = file.size();
 
     if(syncfile.needToCheck()){
