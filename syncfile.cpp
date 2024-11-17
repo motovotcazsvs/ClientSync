@@ -11,7 +11,7 @@ SyncFile::SyncFile(const QString& path) : path(path)
 {
     qDebug() << "SyncFile()" << path;
 
-    QString file_path = path + "/SyncFile.json";
+    QString file_path = path + "%2FSyncFile.json";
     if(QFile(file_path).exists() == false){
         QFile sync_file(file_path);
         already_synchronization = false;
@@ -22,6 +22,7 @@ SyncFile::SyncFile(const QString& path) : path(path)
         already_synchronization = true;
         this->loadSyncFile(file_path);
     }
+
 
 }
 
@@ -109,7 +110,8 @@ bool SyncFile::saveSyncFile()
 {
     qDebug() << "saveSyncFile()";
 
-    QFile file(path + "/SyncFile.json");
+    // QFile file(path + "/SyncFile.json");
+    QFile file(path + "%2FSyncFile.json");
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("no open file for write!");
         return false;
@@ -130,6 +132,8 @@ bool SyncFile::saveSyncFile()
     QJsonDocument doc(json);
     file.write(doc.toJson());
     file.close();
+
+    qDebug() << "sync_file.size()" << file.size();
 
     return true;
 }

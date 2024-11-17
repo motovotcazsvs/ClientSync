@@ -67,6 +67,43 @@ Window {
 
 
 
+    // FileDialog {
+    //     id: folderDialog
+    //     title: qsTr("Select a File")
+    //     fileMode: FileDialog.OpenFile
+    //     //title: "Оберіть папку для синхронізації"
+    //     onAccepted: {
+    //         // Використовуємо selectedFolder замість fileUrl
+    //         if (selectedFiles.length) {
+    //             console.log("we selected: ", selectedFiles[0])
+    //             console.log("Обрана папка: " + folderDialog.selectedFolder);
+    //             folderModel.append({"folderName": folderDialog.selectedFolder.toString(), "syncState": "OFF"});
+    //             client.newSync(folderDialog.selectedFolder.toString());
+    //         } else {
+    //             console.log("Не вибрана папка");
+    //         }
+    //     }
+    //     onRejected: {
+    //         console.log("Вибір папки скасовано");
+    //     }
+    //     currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+    // }
+
+
+
+
+
+        // Image {
+        //     id: image
+        //     anchors.fill: parent
+        //     fillMode: Image.PreserveAspectFit
+        // }
+
+        // FileDialog {
+        //     id: folderDialog
+        //     currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+        //     onAccepted: image.source = selectedFile
+        // }
 
 
 

@@ -2,7 +2,7 @@
 
 #include <QFile>
 #include <QDataStream>
-
+#include <QUrl>
 #include "synchronization.h"
 #include "syncfile.h"
 
@@ -11,13 +11,18 @@
 File::File(Synchronization* synchronization, const QString& path, SyncFile& syncfile) : synchronization(synchronization)
 {
     qDebug() << "File(path)" << path;
-
-    QFile file(path);
-    QString name_file = file.fileName();
+    QString pathadd = path;
+    //pathadd.prepend("%2F");
+    qDebug() << "pathadd" << pathadd;
+    QFile file(pathadd);
     qint64 size_file = file.size();
+    qDebug() << "size_file" << size_file;
+
+    QString name_file = extractFileName(pathadd);
+    qDebug() << "name_file" << name_file;
 
     if(syncfile.needToCheck()){
-        if(syncfile.fileChanged(path)){
+        if(syncfile.fileChanged(pathadd)){
             this->metaData(name_file, size_file);
             this->fileData(file);
         }
@@ -28,7 +33,22 @@ File::File(Synchronization* synchronization, const QString& path, SyncFile& sync
         this->fileData(file);
     }
 
-    syncfile.saveChanged(path);
+    syncfile.saveChanged(pathadd);
+}
+
+QString File::extractFileName(const QString& uri)
+{
+    // Спочатку декодуємо URI
+    QString decodedUri = uri;
+    decodedUri = QUrl::fromPercentEncoding(decodedUri.toUtf8());
+
+    // Знаходимо останній слеш
+    int lastSlashIndex = decodedUri.lastIndexOf('/');
+    if (lastSlashIndex != -1) {
+        // Повертаємо частину після останнього слешу, що є ім'ям файлу
+        return decodedUri.mid(lastSlashIndex + 1);
+    }
+    return QString();
 }
 
 void File::metaData(QString& name_file, qint64 size_file)

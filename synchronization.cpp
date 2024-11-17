@@ -11,6 +11,8 @@
 Synchronization::Synchronization(QObject *parent, QString sync_folder, QTcpSocket* socket) : QObject(parent), sync_folder(sync_folder), socket(socket)
 {
     qDebug() << "Synchronization(sync_folder)" << sync_folder;
+    //sync_folder.append("%2F");
+    qDebug() << "sync_folder" << sync_folder;
 
 }
 
@@ -44,8 +46,13 @@ void Synchronization::sync(const QString& path)
 
     QStringList file_names = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
     foreach(QString file_name, file_names){
-        if(file_name == "SyncFile.json") continue;
+        qDebug() << "foreach" << file_name;
+        //if(file_name == "SyncFile.json") continue;
         File file(this, dir.filePath(file_name), syncfile);
+        // QString pathaddfilename = path;
+        // pathaddfilename.append("%2F");
+        // pathaddfilename.append(file_name);
+        // File file(this, pathaddfilename, syncfile);
     }
 
     QStringList folder_names = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -63,7 +70,7 @@ void Synchronization::sync(const QString& path)
 
 void Synchronization::send(const QByteArray& arr)
 {
-    qDebug() << "send()";
+    qDebug() << "send() << size" << arr.size();
 
     socket->write(arr);
     socket->waitForBytesWritten();

@@ -12,6 +12,8 @@ public:
     File(Synchronization* Synchronization, const QString&, SyncFile&);
     void metaData(QString&, qint64);
     void fileData(QFile&);
+    QString extractFileName(const QString&);
+
 
 private:
     Synchronization* synchronization;
