@@ -11,7 +11,8 @@ SyncFile::SyncFile(const QString& path) : path(path)
 {
     qDebug() << "SyncFile()" << path;
 
-    QString file_path = path + "%2FSyncFile.json";
+    //QString file_path = path + "%2FSyncFile.json";
+    QString file_path = path + "/SyncFile.json";
     if(QFile(file_path).exists() == false){
         QFile sync_file(file_path);
         already_synchronization = false;
@@ -24,6 +25,21 @@ SyncFile::SyncFile(const QString& path) : path(path)
     }
 
 
+}
+
+QString SyncFile::extractFileName(const QString& uri)
+{
+    // Спочатку декодуємо URI
+    QString decodedUri = uri;
+    decodedUri = QUrl::fromPercentEncoding(decodedUri.toUtf8());
+
+    // Знаходимо останній слеш
+    int lastSlashIndex = decodedUri.lastIndexOf('/');
+    if (lastSlashIndex != -1) {
+        // Повертаємо частину після останнього слешу, що є ім'ям файлу
+        return decodedUri.mid(lastSlashIndex + 1);
+    }
+    return QString();
 }
 
 bool SyncFile::needToCheck()
@@ -65,8 +81,9 @@ void SyncFile::saveChanged(const QString& file_path)
 {
     qDebug() << "saveChanged()" << file_path;
 
-    QFileInfo file_info(file_path);
-    QString file_name = file_info.fileName();
+    //QFileInfo file_info(file_path);
+    //QString file_name = file_info.fileName();
+    QString file_name = extractFileName(file_path);
     QDateTime current_sync_time = QDateTime::currentDateTime();
     sync_file_list[file_name] = current_sync_time;
     saveSyncFile();
@@ -110,17 +127,19 @@ bool SyncFile::saveSyncFile()
 {
     qDebug() << "saveSyncFile()";
 
-    // QFile file(path + "/SyncFile.json");
-    QFile file(path + "%2FSyncFile.json");
+    QFile file(path + "/SyncFile.json");
+    //QFile file(path + "%2FSyncFile.json");
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("no open file for write!");
         return false;
     }
 
     QJsonArray sync_files;
-    for (auto it = sync_file_list.constBegin(); it != sync_file_list.constEnd(); ++it) {
+    for(auto it = sync_file_list.constBegin(); it != sync_file_list.constEnd(); ++it) {
         QJsonObject file_obj;
         file_obj["file_name"] = it.key();
+        qDebug() << sync_file_list.size();
+        qDebug() << sync_file_list;
         file_obj["last_sync"] = it.value().toString(Qt::ISODate);
         qDebug() << "datetime syncfile" << it.value().toString(Qt::ISODate);
         sync_files.append(file_obj);

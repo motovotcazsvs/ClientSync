@@ -21,6 +21,7 @@ private:
     QString path;
     bool loadSyncFile(const QString&);
     bool saveSyncFile();
+    QString extractFileName(const QString&);
 
 };
 
